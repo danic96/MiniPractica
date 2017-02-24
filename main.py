@@ -8,7 +8,7 @@ Client web per www.udl.cat
 '''
 
 import urllib2
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 
 url = "https://www.packtpub.com/packt/offers/free-learning/"
 
@@ -31,7 +31,7 @@ class Client(object):
 
     def search_text(self, html):
         """Buscar el text dins del codi html."""
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = bs(html, 'html.parser')
         elements = soup.find_all("div", "dotd-title")
         titles = []
         for element in elements:
@@ -44,8 +44,11 @@ class Client(object):
 
     def print_resultat(self, resultats):
         """Imprimim el resultat."""
-        for resultat in resultats:
-            print resultat
+        if len(resultats) == 0:
+            print "No s'ha trobat cap coincidencia!!!"
+        else:
+            for resultat in resultats:
+                print resultat
 
     def main(self):
         """Seguir."""
