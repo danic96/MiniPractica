@@ -10,7 +10,7 @@ Client web per www.udl.cat
 import urllib2
 from bs4 import BeautifulSoup
 
-url = "https://www.packtpub.com/packt/offers/free-learning"
+url = "https://www.packtpub.com/packt/offers/free-learning/"
 
 
 class Client(object):
@@ -18,7 +18,13 @@ class Client(object):
 
     def get_web(self, page):
         """Baixarse la web."""
-        f = urllib2.urlopen(page)
+        """Comprovar que no hi ha errors al demanar el codi HTML"""
+        try:
+            f = urllib2.urlopen(page)
+        except urllib2.HTTPError as e:
+            print "Error " + str(e.code)
+            return None
+
         html = f.read()
         f.close()
         return html
@@ -27,12 +33,14 @@ class Client(object):
         """Buscar el text dins del codi html."""
         soup = BeautifulSoup(html, 'html.parser')
         elements = soup.find_all("div", "dotd-title")
+        titles = []
         for element in elements:
             title = element.text
             # Com que el text extret de la paguina web conte salts de linea i
             # espais cal eliminarlos
             title = title.replace('\n', '').replace('\t', '')
-        return [title]
+            titles.append(title)
+        return titles
 
     def print_resultat(self, resultats):
         """Imprimim el resultat."""
@@ -42,10 +50,9 @@ class Client(object):
     def main(self):
         """Seguir."""
         web = self.get_web(url)
-        # TODO: buscar el text
-        resultat = self.search_text(web)
-        # TODO: impreimir resultat
-        self.print_resultat(resultat)
+        if web is not None:
+            resultat = self.search_text(web)
+            self.print_resultat(resultat)
 
 
 if __name__ == "__main__":
